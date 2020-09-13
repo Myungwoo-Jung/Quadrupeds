@@ -1,0 +1,1058 @@
+from visual import *
+
+
+#constants
+
+L=190.4
+W=52.2
+H=120
+r=100
+
+
+Lc=38.6
+Lf=87.7
+Lt=87.7
+
+s=30
+sd=30
+sc=30
+
+lfs0=(L/2,0,-W/2)
+lbs0=(-L/2,0,-W/2)
+rfs0=(L/2,0,W/2)
+rbs0=(-L/2,0,W/2)
+lff0=(L/2,-H,-W/2-Lc)
+lbf0=(-L/2,-H,-W/2-Lc)
+rff0=(L/2,-H,W/2+Lc)
+rbf0=(-L/2,-H,W/2+Lc)
+
+
+
+
+def getAngle(a,x,y,z):
+    if (a==0):
+        x=-x
+        x1=x
+        y1=-sqrt(y * y + z * z - Lc * Lc)
+        global angleLFC,angleLFF,angleLFT
+        angleLFC=asin(Lc/sqrt(y**2+z**2))-atan(z/y)
+        angleLFF=acos((Lf * Lf + x1 * x1 + y1 * y1 - Lt * Lt) / (2 * Lf * sqrt(x1 * x1 + y1 * y1))) - atan(x1 / y1)
+        angleLFT=asin((x ** 2 + y **2 + z**2 - Lc ** 2 - Lt ** 2 - Lf ** 2) / (2*Lf * Lt))
+        return(angleLFC,angleLFF,angleLFT)
+    elif(a==1):
+        x=-x
+        x1=x
+        y1=-sqrt(y * y + z * z - Lc * Lc)
+        global angleRFC,angleRFF,angleRFT
+        angleRFC=asin(Lc/sqrt(y**2+z**2))+atan(z/y)
+        angleRFF=acos((Lf * Lf + x1 * x1 + y1 * y1 - Lt * Lt) / (2 * Lf * sqrt(x1 * x1 + y1 * y1))) - atan(x1 / y1)
+        angleRFT=asin((x ** 2 + y ** 2 + z ** 2 - Lc ** 2 - Lt ** 2 - Lf ** 2) / (2*Lf * Lt))
+        return(angleRFC,angleRFF,angleRFT)
+    elif (a==2):
+        x=-x
+        x1=x
+        y1=-sqrt(y * y + z * z - Lc * Lc)
+        global angleLBC,angleLBF,angleLBT
+        angleLBC=asin(Lc/sqrt(y**2+z**2))-atan(z/y)
+        angleLBF=acos((Lf * Lf + x1 * x1 + y1 * y1 - Lt * Lt) / (2 * Lf * sqrt(x1 * x1 + y1 * y1))) - atan(x1 / y1)
+        angleLBT=asin((x ** 2 + y ** 2 + z ** 2 - Lc ** 2 - Lt ** 2 - Lf ** 2) / (2*Lf * Lt))
+        return(angleLBC,angleLBF,angleLBT)
+    elif(a==3):
+        x=-x
+        x1=x
+        y1=-sqrt(y * y + z * z - Lc * Lc)
+        global angleRBC,angleRBF,angleRBT
+        angleRBC=asin(Lc/sqrt(y**2+z**2))+atan(z/y)
+        angleRBF=acos((Lf * Lf + x1 * x1 + y1 * y1 - Lt * Lt) / (2 * Lf * sqrt(x1 * x1 + y1 * y1))) - atan(x1 / y1)
+        angleRBT=asin((x ** 2 + y ** 2 + z ** 2 - Lc ** 2 - Lt ** 2 - Lf ** 2) / (2*Lf * Lt))
+        return(angleRBC,angleRBF,angleRBT)
+
+
+
+
+def createMainbody():
+    body=box(pos=(0,0,0),length=L,width=W,height=1,color=color.cyan)
+    
+
+def createJointsnFeet():
+    #LeftFront
+    global jointLFC,jointLFF,jointLFT,footLF
+    jointLFC=sphere(pos=(L/2,0,-W/2),radius=10,color=color.cyan)
+    jointLFF=sphere(pos=jointLFC.pos+(0,-Lc*sin(angleLFC),-Lc*cos(angleLFC)),radius=10,color=color.cyan)
+    jointLFT=sphere(pos=jointLFF.pos+(-Lf*sin(angleLFF),-Lf*cos(angleLFF)*cos(angleLFC),Lf*cos(angleLFF)*sin(angleLFC)),radius=10,color=color.cyan)
+    footLF=sphere(pos=jointLFT.pos+(Lt*cos(angleLFT+angleLFF),-Lt*sin(angleLFF+angleLFT)*cos(angleLFC),Lt*sin(angleLFF+angleLFT)*sin(angleLFC)),radius=10,color=color.cyan)
+    
+    #LeftBack
+    global jointLBC,jointLBF,jointLBT,footLB
+    jointLBC=sphere(pos=(-L/2,0,-W/2),radius=10,color=color.cyan)
+    jointLBF=sphere(pos=jointLBC.pos+(0,-Lc*sin(angleLBC),-Lc*cos(angleLBC)),radius=10,color=color.cyan)
+    jointLBT=sphere(pos=jointLBF.pos+(-Lf*sin(angleLBF),-Lf*cos(angleLBF)*cos(angleLBC),Lf*cos(angleLBF)*sin(angleLBC)),radius=10,color=color.cyan)
+    footLB=sphere(pos=jointLBT.pos+(Lt*cos(angleLBT+angleLBF),-Lt*sin(angleLBF+angleLBT)*cos(angleLBC),Lt*sin(angleLBF+angleLBT)*sin(angleLBC)),radius=10,color=color.cyan)
+
+    #RightFront
+    global jointRFC,jointRFF,jointRFT,footRF
+    jointRFC=sphere(pos=(L/2,0,W/2),radius=10,color=color.cyan)
+    jointRFF=sphere(pos=jointRFC.pos+(0,-Lc*sin(angleRFC),Lc*cos(angleRFC)),radius=10,color=color.cyan)
+    jointRFT=sphere(pos=jointRFF.pos+(-Lf*sin(angleRFF),-Lf*cos(angleRFF)*cos(angleRFC),-Lf*cos(angleRFF)*sin(angleRFC)),radius=10,color=color.cyan)
+    footRF=sphere(pos=jointRFT.pos+(Lt*cos(angleRFT+angleRFF),-Lt*sin(angleRFF+angleRFT)*cos(angleRFC),-Lt*sin(angleRFF+angleRFT)*sin(angleRFC)),radius=10,color=color.cyan)
+
+    #RightBack
+    global jointRBC,jointRBF,jointRBT,footRB
+    jointRBC=sphere(pos=(-L/2,0,W/2),radius=10,color=color.cyan)
+    jointRBF=sphere(pos=jointRBC.pos+(0,-Lc*sin(angleRBC),Lc*cos(angleRBC)),radius=10,color=color.cyan)
+    jointRBT=sphere(pos=jointRBF.pos+(-Lf*sin(angleRBF),-Lf*cos(angleRBF)*cos(angleRBC),-Lf*cos(angleRBF)*sin(angleRBC)),radius=10,color=color.cyan)
+    footRB=sphere(pos=jointRBT.pos+(Lt*cos(angleRBT+angleRBF),-Lt*sin(angleRBF+angleRBT)*cos(angleRBC),-Lt*sin(angleRBF+angleRBT)*sin(angleRBC)),radius=10,color=color.cyan)
+
+
+
+
+
+
+def createLegs():
+    #LeftFront
+    global legLFC,legLFF,legLFT
+    legLFC=cylinder(pos=jointLFC.pos,axis=jointLFF.pos-jointLFC.pos,radius=10,color=color.blue)
+    legLFF=cylinder(pos=jointLFF.pos,axis=jointLFT.pos-jointLFF.pos,radius=10,color=color.red)
+    legLFT=cylinder(pos=jointLFT.pos,axis=footLF.pos-jointLFT.pos,radius=10,color=color.yellow)
+
+    #RightFront
+    global legRFC,legRFF,legRFT
+    legRFC=cylinder(pos=jointRFC.pos,axis=jointRFF.pos-jointRFC.pos,radius=10,color=color.blue)
+    legRFF=cylinder(pos=jointRFF.pos,axis=jointRFT.pos-jointRFF.pos,radius=10,color=color.red)
+    legRFT=cylinder(pos=jointRFT.pos,axis=footRF.pos-jointRFT.pos,radius=10,color=color.yellow)
+
+    #LeftBack
+    global legLBC,legLBF,legLBT
+    legLBC=cylinder(pos=jointLBC.pos,axis=jointLBF.pos-jointLBC.pos,radius=10,color=color.blue)
+    legLBF=cylinder(pos=jointLBF.pos,axis=jointLBT.pos-jointLBF.pos,radius=10,color=color.red)
+    legLBT=cylinder(pos=jointLBT.pos,axis=footLB.pos-jointLBT.pos,radius=10,color=color.yellow)
+
+    #RightBack
+    global legRBC,legRBF,legRBT
+    legRBC=cylinder(pos=jointRBC.pos,axis=jointRBF.pos-jointRBC.pos,radius=10,color=color.blue)
+    legRBF=cylinder(pos=jointRBF.pos,axis=jointRBT.pos-jointRBF.pos,radius=10,color=color.red)
+    legRBT=cylinder(pos=jointRBT.pos,axis=footRB.pos-jointRBT.pos,radius=10,color=color.yellow)
+
+
+
+def clearAll():
+
+    global jointLFC,jointLFF,jointLFT,footLF,legLFC,legLFF,legLFT
+    jointLFC.visible=False
+    jointLFF.visible=False
+    jointLFT.visible=False
+    footLF.visible=False
+    legLFC.visible=False
+    legLFF.visible=False
+    legLFT.visible=False
+        
+    global jointLBC,jointLBF,jointLBT,footLB,legLBC,legLBF,legLBT
+    jointLBC.visible=False
+    jointLBF.visible=False
+    jointLBT.visible=False
+    footLB.visible=False
+    legLBC.visible=False
+    legLBF.visible=False
+    legLBT.visible=False
+        
+    global jointRFC,jointRFF,jointRFT,footRF,legRFC,legRFF,legRFT
+    jointRFC.visible=False
+    jointRFF.visible=False
+    jointRFT.visible=False
+    footRF.visible=False
+    legRFC.visible=False
+    legRFF.visible=False
+    legRFT.visible=False
+     
+    global jointRBC,jointRBF,jointRBT,footRB,legRBC,legRBF,legRBT
+    jointRBC.visible=False
+    jointRBF.visible=False
+    jointRBT.visible=False
+    footRB.visible=False
+    legRBC.visible=False
+    legRBF.visible=False
+    legRBT.visible=False
+
+
+def bounce():
+    t=0
+    while (t<=30):
+        getAngle(0,0,-H+t,-Lc)
+        getAngle(1,0,-H+t,Lc)
+        getAngle(2,0,-H+t,-Lc)
+        getAngle(3,0,-H+t,Lc)
+        t=t+1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+    while (t>=0):
+        getAngle(0,0,-H+30-t,-Lc)
+        getAngle(1,0,-H+30-t,Lc)
+        getAngle(2,0,-H+30-t,-Lc)
+        getAngle(3,0,-H+30-t,Lc)
+        t=t-1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+#vector calculations
+
+def quat_multiply((r1,x1,y1,z1),(r2,x2,y2,z2)):
+    r=r1*r2-x1*x2-y1*y2-z1*z2
+    x=r1*x2+r2*x1+y1*z2-y2*z1
+    y=r1*y2+r2*y1+z1*x2-z2*x1
+    z=r1*z2+r2*z1+x1*y2-x2*y1
+    return (r,x,y,z)
+
+def get_coordinates((r,x,y,z)):
+    return (x,y,z)
+
+def quat_rot((ax,ay,az),(px,py,pz),theta):
+    q=(cos(theta/2),ax*sin(theta/2),ay*sin(theta/2),az*sin(theta/2))
+    p=(0,px,py,pz)
+    qi=(cos(theta/2),-ax*sin(theta/2),-ay*sin(theta/2),-az*sin(theta/2))
+    qp=quat_multiply(q,p)
+    qpqi=quat_multiply(qp,qi)
+    return get_coordinates(qpqi)
+
+def vec_sum((x1,y1,z1),(x2,y2,z2)):
+    x=x1+x2
+    y=y1+y2
+    z=z1+z2
+    return (x,y,z)
+
+def vec_sub((x1,y1,z1),(x2,y2,z2)):
+    x=x1-x2
+    y=y1-y2
+    z=z1-z2
+    return (x,y,z)
+
+
+lfd0=vec_sub(lff0,lfs0)
+lbd0=vec_sub(lbf0,lbs0)
+rfd0=vec_sub(rff0,rfs0)
+rbd0=vec_sub(rbf0,rbs0)
+
+"""
+def inverse_matrix((a,b,c),(d,e,f),(g,h,i)):
+    val=1/(a*e*i-a*f*h-b*d*i+b*f*g+c*d*h-c*e*g)
+    return ((val*e*i-val*f*h,val*c*h-val*b*i,val*b*f-val*c*e),(val*f*g-val*d*i,val*a*i-val*c*g,val*c*d-val*a*f),(val*d*h-val*e*g,val*b*g-val*a*h,val*a*e-val*b*d))
+
+
+def stat_rot((ax,ay,az),theta):
+    lfs=quat_rot((ax,ay,az),lfs0,theta)
+    lbs=quat_rot((ax,ay,az),lbs0,theta)
+    rfs=quat_rot((ax,ay,az),rfs0,theta)
+    rbs=quat_rot((ax,ay,az),rbs0,theta)
+    lfd0=vec_sub(lff,lfs)
+    lbd0=vec_sub(lbf,lbs)
+    rfd0=vec_sub(rff,rfs)
+    rbd0=vec_sub(rbf,rbs)
+    x1=quat_rot((ax,ay,az),(1,0,0),theta)
+    y1=quat_rot((ax,ay,az),(0,1,0),theta)
+    z1=quat_rot((ax,ay,az),(0,0,1),theta)
+    ((c11,c12,c13),(c21,c22,c23),(c31,c32,c33))=inverse_matrix((x1[0],x1[1],x1[2]),(y1[0],y1[1],y1[2]),(z1[0],z1[1],z1[2]))
+    lfd=(lfd0[0]*c11+lfd0[1]*c21+lfd0[2]*c31,lfd0[0]*c12+lfd0[1]*c22+lfd0[2]*c32,lfd0[0]*c13+lfd0[1]*c23+lfd0[2]*c33)
+    lbd=(lbd0[0]*c11+lbd0[1]*c21+lbd0[2]*c31,lbd0[0]*c12+lbd0[1]*c22+lbd0[2]*c32,lbd0[0]*c13+lbd0[1]*c23+lbd0[2]*c33)
+    rfd=(rfd0[0]*c11+rfd0[1]*c21+rfd0[2]*c31,rfd0[0]*c12+rfd0[1]*c22+rfd0[2]*c32,rfd0[0]*c13+rfd0[1]*c23+rfd0[2]*c33)
+    rbd=(rbd0[0]*c11+rbd0[1]*c21+rbd0[2]*c31,rbd0[0]*c12+rbd0[1]*c22+rbd0[2]*c32,rbd0[0]*c13+rbd0[1]*c23+rbd0[2]*c33)
+    getAngle(0,lfd[0],lfd[1],lfd[2])
+    getAngle(2,lbd[0],lbd[1],lbd[2])
+    getAngle(1,rfd[0],rfd[1],rfd[2])
+    getAngle(3,rbd[0],rbd[1],rbd[2])
+"""
+
+def stat_rot((ax,ay,az),theta):
+    lff=quat_rot((ax,ay,az),lff0,theta)
+    lbf=quat_rot((ax,ay,az),lbf0,theta)
+    rff=quat_rot((ax,ay,az),rff0,theta)
+    rbf=quat_rot((ax,ay,az),rbf0,theta)
+    lfd=vec_sub(lff,lfs0)
+    lbd=vec_sub(lbf,lbs0)
+    rfd=vec_sub(rff,rfs0)
+    rbd=vec_sub(rbf,rbs0)
+    getAngle(0,lfd[0],lfd[1],lfd[2])
+    getAngle(2,lbd[0],lbd[1],lbd[2])
+    getAngle(1,rfd[0],rfd[1],rfd[2])
+    getAngle(3,rbd[0],rbd[1],rbd[2])
+    
+    
+
+def roll(angle):
+    t=0
+    while(t<60):
+        stat_rot((1,0,0),t*angle/60)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+        t=t+1
+
+def pitch(angle):
+    t=0
+    while(t<60):
+        stat_rot((0,0,1),t*angle/60)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+        t=t+1
+
+def yaw(angle):
+    t=0
+    while(t<60):
+        stat_rot((0,1,0),t*angle/60)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+        t=t+1
+
+
+#walking gaits
+
+
+def backtrot(steps):
+    k=(steps-2)/2
+    theta=pi/6
+    while(theta<=pi/3):
+        t=60-theta*180/pi
+        getAngle(1, s / 2 + s * cos(2 * theta)-s, -H - sqrt(3)*s / 2 + s * sin(2 * theta), Lc)
+        getAngle(2, s / 2 + s * cos(2 * theta)-s, -H - sqrt(3)*s / 2 + s * sin(2 * theta), -Lc)
+        getAngle(0, s-s * t / 30, -H, -Lc)
+        getAngle(3, s-s * t / 30, -H, Lc)
+        theta=theta+pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+    i=1
+    while(i<=k):
+        theta=pi/3
+        while(theta<=2*pi/3):
+            t=120-theta*180/pi
+            getAngle(1, s - s * t / 30, -H, Lc)
+            getAngle(2, s - s * t / 30, -H, -Lc)
+            getAngle(0, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, -Lc)
+            getAngle(3, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, Lc)
+            theta=theta+pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        theta=pi/3
+        while(theta<=2*pi/3):
+            t=120-theta*180/pi
+            getAngle(0, s - s * t / 30, -H, -Lc)
+            getAngle(3, s - s * t / 30, -H, Lc)
+            getAngle(1, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, Lc)
+            getAngle(2, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, -Lc)
+            theta=theta+pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        i=i+1
+
+    theta=pi/6
+    while(theta<=pi/3):
+        t=60-theta*180/pi
+        getAngle(0, s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), -Lc)
+        getAngle(3, s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), Lc)
+        getAngle(1, -s * t / 30, -H, Lc)
+        getAngle(2, -s * t / 30, -H, -Lc)
+        theta=theta+pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+
+
+
+def trot(steps):
+    k=(steps-2)/2
+    theta=pi/3
+    while(theta>=pi/6):
+        t=60-theta*180/pi
+        getAngle(1, s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), Lc)
+        getAngle(2, s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), -Lc)
+        getAngle(0, -s * t / 30, -H, -Lc)
+        getAngle(3, -s * t / 30, -H, Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+    i=1
+    while(i<=k):
+        theta=2*pi/3
+        while(theta>=pi/3):
+            t=120-theta*180/pi
+            getAngle(1, s - s * t / 30, -H, Lc)
+            getAngle(2, s - s * t / 30, -H, -Lc)
+            getAngle(0, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, -Lc)
+            getAngle(3, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, Lc)
+            theta=theta-pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        theta=2*pi/3
+        while(theta>=pi/3):
+            t=120-theta*180/pi
+            getAngle(0, s - s * t / 30, -H, -Lc)
+            getAngle(3, s - s * t / 30, -H, Lc)
+            getAngle(1, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, Lc)
+            getAngle(2, 2 * s * cos(theta), 2 * s * sin(theta) - H - sqrt(3)*s, -Lc)
+            theta=theta-pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        i=i+1
+
+    theta=pi/3
+    while(theta>=pi/6):
+        t=60-theta*180/pi
+        getAngle(0, -s+s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), -Lc)
+        getAngle(3, -s+s / 2 + s * cos(2 * theta), -H - sqrt(3)*s / 2 + s * sin(2 * theta), Lc)
+        getAngle(1, s-s * t / 30, -H, Lc)
+        getAngle(2, s-s * t / 30, -H, -Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+
+def translateleft(steps):
+    k=(steps-2)/2
+    theta=pi/6
+    while(theta<=pi/3):
+        t=60-theta*180/pi
+        getAngle(1, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), sd / 2 + sd * cos(2 * theta)-sd+Lc)
+        getAngle(2, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), sd / 2 + sd * cos(2 * theta)-sd-Lc)
+        getAngle(0, 0, -H, sd-sd * t / 30-Lc)
+        getAngle(3, 0, -H, sd-sd*t/30+Lc)
+        theta=theta+pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+    i=1
+    while(i<=k):
+        theta=pi/3
+        while(theta<=2*pi/3):
+            t=120-theta*180/pi
+            getAngle(1, 0, -H, sd - sd * t / 30+Lc)
+            getAngle(2, 0, -H, sd - sd * t / 30-Lc)
+            getAngle(0, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd,  2 * sd * cos(theta)-Lc)
+            getAngle(3, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd, 2 * sd * cos(theta)+Lc)
+            theta=theta+pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        theta=pi/3
+        while(theta<=2*pi/3):
+            t=120-theta*180/pi
+            getAngle(0, 0, -H, sd - sd * t / 30-Lc)
+            getAngle(3, 0, -H, sd - sd * t / 30+Lc)
+            getAngle(1, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd, 2 * sd * cos(theta)+Lc)
+            getAngle(2, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd, 2 * sd * cos(theta)-Lc)
+            theta=theta+pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        i=i+1
+
+    theta=pi/6
+    while(theta<=pi/3):
+        t=60-theta*180/pi
+        getAngle(0, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta),  sd / 2 + sd * cos(2 * theta)-Lc)
+        getAngle(3, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), sd / 2 + sd * cos(2 * theta)+Lc)
+        getAngle(1, 0, -H, -sd * t / 30+Lc)
+        getAngle(2, 0, -H, -sd * t / 30-Lc)
+        theta=theta+pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+
+def translateright(steps):
+    k=(steps-2)/2
+    theta=pi/3
+    while(theta>=pi/6):
+        t=60-theta*180/pi
+        getAngle(1, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), sd / 2 + sd * cos(2 * theta)+Lc)
+        getAngle(2, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), 2*sd+sd / 2 + sd * cos(2 * theta)-2*sd-Lc)
+        getAngle(0, 0, -H, -sd * t / 30-Lc)
+        getAngle(3, 0, -H, -sd*t/30+Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+    i=1
+    while(i<=k):
+        theta=2*pi/3
+        while(theta>=pi/3):
+            t=120-theta*180/pi
+            getAngle(1, 0, -H, sd - sd * t / 30+Lc)
+            getAngle(2, 0, -H, sd - sd * t / 30-Lc)
+            getAngle(0, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd,  2 * sd * cos(theta)-Lc)
+            getAngle(3, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd, 2 * sd * cos(theta)+Lc)
+            theta=theta-pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+        theta=2*pi/3
+        while(theta>=pi/3):
+            t=120-theta*180/pi
+            getAngle(0, 0, -H, sd - sd * t / 30-Lc)
+            getAngle(3, 0, -H, sd - sd * t / 30+Lc)
+            getAngle(1, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd,  2*sd * cos(theta)+Lc)
+            getAngle(2, 0, 2 * sd * sin(theta) - H - sqrt(3)*sd,  2*sd * cos(theta)-Lc)
+            theta=theta-pi/180
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+        i=i+1
+
+    theta=pi/3
+    while(theta>=pi/6):
+        t=60-theta*180/pi
+        getAngle(0, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta),  -sd / 2 + sd * cos(2 * theta)-Lc)
+        getAngle(3, 0, -H - sqrt(3)*sd / 2 + sd * sin(2 * theta), -sd / 2 + sd * cos(2 * theta)+Lc)
+        getAngle(1, 0, -H, sd-sd * t / 30+Lc)
+        getAngle(2, 0, -H, sd-sd * t / 30-Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+
+def spin(theta):
+    if(theta<=pi/2 and theta>=-pi/2):
+        #step1
+        t=0
+        while(t<=60):
+            lff=quat_rot((0,1,0),lff0,theta/2*t/60)
+            lbf=quat_rot((0,1,0),lbf0,-theta/2*t/60)
+            rff=quat_rot((0,1,0),rff0,-theta/2*t/60)
+            rbf=quat_rot((0,1,0),rbf0,theta/2*t/60)
+            lfd=vec_sub(lff,lfs0)
+            lbd=vec_sub(lbf,lbs0)
+            rfd=vec_sub(rff,rfs0)
+            rbd=vec_sub(rbf,rbs0)
+            getAngle(0,lfd[0],lfd[1]+10-abs(t/3-10),lfd[2])
+            getAngle(1,rfd[0],rfd[1],rfd[2])
+            getAngle(2,lbd[0],lbd[1],lbd[2])
+            getAngle(3,rbd[0],rbd[1]+10-abs(t/3-10),rbd[2])
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+            t=t+1
+        #step2
+        t=-60
+        while(t<=0):
+            lff=quat_rot((0,1,0),lff0,-theta/2*t/60)
+            lbf=quat_rot((0,1,0),lbf0,theta/2*t/60)
+            rff=quat_rot((0,1,0),rff0,theta/2*t/60)
+            rbf=quat_rot((0,1,0),rbf0,-theta/2*t/60)
+            lfd=vec_sub(lff,lfs0)
+            lbd=vec_sub(lbf,lbs0)
+            rfd=vec_sub(rff,rfs0)
+            rbd=vec_sub(rbf,rbs0)
+            getAngle(0,lfd[0],lfd[1],lfd[2])
+            getAngle(1,rfd[0],rfd[1]+10-abs(-t/3-10),rfd[2])
+            getAngle(2,lbd[0],lbd[1]+10-abs(-t/3-10),lbd[2])
+            getAngle(3,rbd[0],rbd[1],rbd[2])
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+            t=t+1
+    elif(theta>pi/2 or theta<=-pi/2):
+        theta=theta/2
+        cnt=1
+        while(cnt<=2):
+            #step1
+            t=0
+            while(t<=60):
+                lff=quat_rot((0,1,0),lff0,theta/2*t/60)
+                lbf=quat_rot((0,1,0),lbf0,-theta/2*t/60)
+                rff=quat_rot((0,1,0),rff0,-theta/2*t/60)
+                rbf=quat_rot((0,1,0),rbf0,theta/2*t/60)
+                lfd=vec_sub(lff,lfs0)
+                lbd=vec_sub(lbf,lbs0)
+                rfd=vec_sub(rff,rfs0)
+                rbd=vec_sub(rbf,rbs0)
+                getAngle(0,lfd[0],lfd[1]+10-abs(t/3-10),lfd[2])
+                getAngle(1,rfd[0],rfd[1],rfd[2])
+                getAngle(2,lbd[0],lbd[1],lbd[2])
+                getAngle(3,rbd[0],rbd[1]+10-abs(t/3-10),rbd[2])
+                createJointsnFeet()
+                createLegs()
+                sleep(0.01)
+                clearAll()
+                t=t+1
+                
+            #step2
+            t=-60
+            while(t<=0):
+                lff=quat_rot((0,1,0),lff0,-theta/2*t/60)
+                lbf=quat_rot((0,1,0),lbf0,theta/2*t/60)
+                rff=quat_rot((0,1,0),rff0,theta/2*t/60)
+                rbf=quat_rot((0,1,0),rbf0,-theta/2*t/60)
+                lfd=vec_sub(lff,lfs0)
+                lbd=vec_sub(lbf,lbs0)
+                rfd=vec_sub(rff,rfs0)
+                rbd=vec_sub(rbf,rbs0)
+                getAngle(0,lfd[0],lfd[1],lfd[2])
+                getAngle(1,rfd[0],rfd[1]+10-abs(-t/3-10),rfd[2])
+                getAngle(2,lbd[0],lbd[1]+10-abs(-t/3-10),lbd[2])
+                getAngle(3,rbd[0],rbd[1],rbd[2])
+                createJointsnFeet()
+                createLegs()
+                sleep(0.01)
+                clearAll()
+                t=t+1
+
+            cnt=cnt+1
+
+
+def backspin(theta):
+    theta=-theta
+    if(theta<=pi/2 and theta>=-pi/2):
+        #step1
+        t=0
+        while(t<=60):
+            lff=quat_rot((0,1,0),lff0,-theta/2*t/60)
+            lbf=quat_rot((0,1,0),lbf0,theta/2*t/60)
+            rff=quat_rot((0,1,0),rff0,theta/2*t/60)
+            rbf=quat_rot((0,1,0),rbf0,-theta/2*t/60)
+            lfd=vec_sub(lff,lfs0)
+            lbd=vec_sub(lbf,lbs0)
+            rfd=vec_sub(rff,rfs0)
+            rbd=vec_sub(rbf,rbs0)
+            getAngle(0,lfd[0],lfd[1]+10-abs(t/3-10),lfd[2])
+            getAngle(1,rfd[0],rfd[1],rfd[2])
+            getAngle(2,lbd[0],lbd[1],lbd[2])
+            getAngle(3,rbd[0],rbd[1]+10-abs(t/3-10),rbd[2])
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+            t=t+1
+        #step2
+        t=-60
+        while(t<=0):
+            lff=quat_rot((0,1,0),lff0,theta/2*t/60)
+            lbf=quat_rot((0,1,0),lbf0,-theta/2*t/60)
+            rff=quat_rot((0,1,0),rff0,-theta/2*t/60)
+            rbf=quat_rot((0,1,0),rbf0,theta/2*t/60)
+            lfd=vec_sub(lff,lfs0)
+            lbd=vec_sub(lbf,lbs0)
+            rfd=vec_sub(rff,rfs0)
+            rbd=vec_sub(rbf,rbs0)
+            getAngle(0,lfd[0],lfd[1],lfd[2])
+            getAngle(1,rfd[0],rfd[1]+10-abs(-t/3-10),rfd[2])
+            getAngle(2,lbd[0],lbd[1]+10-abs(-t/3-10),lbd[2])
+            getAngle(3,rbd[0],rbd[1],rbd[2])
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+            t=t+1
+    elif(theta>pi/2 or theta<=-pi/2):
+        theta=theta/2
+        cnt=1
+        while(cnt<=2):
+            #step1
+            t=0
+            while(t<=60):
+                lff=quat_rot((0,1,0),lff0,-theta/2*t/60)
+                lbf=quat_rot((0,1,0),lbf0,theta/2*t/60)
+                rff=quat_rot((0,1,0),rff0,theta/2*t/60)
+                rbf=quat_rot((0,1,0),rbf0,-theta/2*t/60)
+                lfd=vec_sub(lff,lfs0)
+                lbd=vec_sub(lbf,lbs0)
+                rfd=vec_sub(rff,rfs0)
+                rbd=vec_sub(rbf,rbs0)
+                getAngle(0,lfd[0],lfd[1]+10-abs(t/3-10),lfd[2])
+                getAngle(1,rfd[0],rfd[1],rfd[2])
+                getAngle(2,lbd[0],lbd[1],lbd[2])
+                getAngle(3,rbd[0],rbd[1]+10-abs(t/3-10),rbd[2])
+                createJointsnFeet()
+                createLegs()
+                sleep(0.01)
+                clearAll()
+                t=t+1
+                
+            #step2
+            t=-60
+            while(t<=0):
+                lff=quat_rot((0,1,0),lff0,theta/2*t/60)
+                lbf=quat_rot((0,1,0),lbf0,-theta/2*t/60)
+                rff=quat_rot((0,1,0),rff0,-theta/2*t/60)
+                rbf=quat_rot((0,1,0),rbf0,theta/2*t/60)
+                lfd=vec_sub(lff,lfs0)
+                lbd=vec_sub(lbf,lbs0)
+                rfd=vec_sub(rff,rfs0)
+                rbd=vec_sub(rbf,rbs0)
+                getAngle(0,lfd[0],lfd[1],lfd[2])
+                getAngle(1,rfd[0],rfd[1]+10-abs(-t/3-10),rfd[2])
+                getAngle(2,lbd[0],lbd[1]+10-abs(-t/3-10),lbd[2])
+                getAngle(3,rbd[0],rbd[1],rbd[2])
+                createJointsnFeet()
+                createLegs()
+                sleep(0.01)
+                clearAll()
+                t=t+1
+
+            cnt=cnt+1
+
+
+def leftcurve(angle):
+    
+    theta=pi/8
+    k=angle/theta/2-1
+    lfs1=vec_sum((0,0,r),lfs0)
+    rfs1=vec_sum((0,0,r),rfs0)
+    lbs1=vec_sum((0,0,r),lfs0)
+    rbs1=vec_sum((0,0,r),rfs0)
+    lff1=vec_sum((0,0,r),lff0)
+    rff1=vec_sum((0,0,r),rff0)
+    lbf1=vec_sum((0,0,r),lff0)
+    rbf1=vec_sum((0,0,r),rff0)
+    lffp1=quat_rot((0,1,0),lff1,theta)
+    rffp1=quat_rot((0,1,0),rff1,theta)
+    lbfp1=quat_rot((0,1,0),lbf1,theta)
+    rbfp1=quat_rot((0,1,0),rbf1,theta)
+    lffn1=quat_rot((0,1,0),lff1,-theta)
+    rffn1=quat_rot((0,1,0),rff1,-theta) 
+    lbfn1=quat_rot((0,1,0),lbf1,-theta)
+    rbfn1=quat_rot((0,1,0),rbf1,-theta)
+    lfdp1=vec_sub(lffp1,lfs1)
+    rfdp1=vec_sub(rffp1,rfs1)
+    lbdp1=vec_sub(lbfp1,lbs1)
+    rbdp1=vec_sub(rbfp1,rbs1)
+    lfdn1=vec_sub(lffn1,lfs1)
+    rfdn1=vec_sub(rffn1,rfs1)
+    lbdn1=vec_sub(lbfn1,lbs1)
+    rbdn1=vec_sub(rbfn1,rbs1)
+    t=0
+    while(t<=60):
+        getAngle(0,lfdn1[0]*t/60,lfdn1[1],lfdn1[2]*t/60-Lc)
+        getAngle(3,rbdn1[0]*t/60,rbdn1[1],rbdn1[2]*t/60+Lc)
+        getAngle(2,lbdp1[0]*t/60,lbdp1[1]+10-abs(t/3-10),lbdp1[2]*t/60-Lc)
+        getAngle(1,rfdp1[0]*t/60,rfdp1[1]+10-abs(t/3-10),rfdp1[2]*t/60+Lc)
+        t=t+1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+    i=0
+    while(i<=k):
+        t=0
+        while t<=120:
+            getAngle(0,mapping(t,0,120,lfdn1[0],lfdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,lfdn1[2],lfdp1[2])-Lc)
+            getAngle(3,mapping(t,0,120,rbdn1[0],rbdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,rbdn1[2],rbdp1[2])+Lc)
+            getAngle(1,mapping(t,0,120,rfdp1[0],rfdn1[0]),-H,mapping(t,0,120,rfdp1[2],rfdn1[2])+Lc)
+            getAngle(2,mapping(t,0,120,lbdp1[0],lbdn1[0]),-H,mapping(t,0,120,lbdp1[2],lbdn1[2])-Lc)
+            t=t+1
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        t=0
+        while t<=120:
+            getAngle(0,mapping(t,0,120,lfdp1[0],lfdn1[0]),-H,mapping(t,0,120,lfdp1[2],lfdn1[2])-Lc)
+            getAngle(3,mapping(t,0,120,rbdp1[0],rbdn1[0]),-H,mapping(t,0,120,rbdp1[2],rbdn1[2])+Lc)
+            getAngle(1,mapping(t,0,120,rfdn1[0],rfdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,rfdn1[2],rfdp1[2])+Lc)
+            getAngle(2,mapping(t,0,120,lbdn1[0],lbdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,lbdn1[2],lbdp1[2])-Lc)
+            t=t+1
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        i=i+1
+
+    
+    t=60
+    while(t>=0):
+        getAngle(0,lfdn1[0]*t/60,lfdn1[1]+10-abs(t/3-10),lfdn1[2]*t/60-Lc)
+        getAngle(3,rbdn1[0]*t/60,rbdn1[1]+10-abs(t/3-10),rbdn1[2]*t/60+Lc)
+        getAngle(2,lbdp1[0]*t/60,lbdp1[1],lbdp1[2]*t/60-Lc)
+        getAngle(1,rfdp1[0]*t/60,rfdp1[1],rfdp1[2]*t/60+Lc)
+        t=t-1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+#functions for (creep)
+
+
+def start():
+    
+    theta=pi/3
+    while(theta>=pi/6):
+        getAngle(0,0,-H,-Lc)
+        getAngle(1,0,-H,Lc)
+        getAngle(2,0,-H,-Lc)
+        getAngle(3,sc/2+sc*cos(2*theta),-H-sqrt(3)*sc/2+sc*sin(2*theta),Lc)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        theta=theta-pi/180
+        clearAll()
+    
+    theta=pi/6
+    while(theta<=pi/3):
+        getAngle(1,-sc/2+sc*cos(2*theta),-H-sqrt(3)*sc/2+sc*sin(2*theta),Lc)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        theta=theta+pi/180
+        clearAll()
+    
+
+def cycle():
+    
+    theta=2*pi/3
+    while(theta>=pi/3):
+        getAngle(1,2*sc*cos(theta),-H-sqrt(3)*sc+2*sc*sin(theta),Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+    theta=pi/6
+    while(theta<=pi/3):
+        getAngle(0,-sc/2+sc*cos(2*theta),-H,-Lc)
+        getAngle(1,sc/2+sc*cos(2*theta),-H,Lc)
+        getAngle(2,-sc/2+sc*cos(2*theta),-H,-Lc)
+        getAngle(3,sc/2+sc*cos(2*theta),-H,Lc)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+        theta=theta+pi/180
+
+    theta=2*pi/3
+    while(theta>=pi/3):
+        getAngle(2,2*sc*cos(theta),-H-sqrt(3)*sc+2*sc*sin(theta),-Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+    theta=2*pi/3
+    while(theta>=pi/3):
+        getAngle(0,2*sc*cos(theta),-H-sqrt(3)*sc+2*sc*sin(theta),-Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+    theta=pi/6
+    while(theta<=pi/3):
+        getAngle(0,sc/2+sc*cos(2*theta),-H,-Lc)
+        getAngle(1,-sc/2+sc*cos(2*theta),-H,Lc)
+        getAngle(2,sc/2+sc*cos(2*theta),-H,-Lc)
+        getAngle(3,-sc/2+sc*cos(2*theta),-H,Lc)
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+        theta=theta+pi/180
+
+    
+    
+def cont():
+    theta=2*pi/3
+    while(theta>=pi/3):
+        getAngle(3,2*sc*cos(theta),-H-sqrt(3)*sc+2*sc*sin(theta),Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+    
+def end():
+    theta=pi/3
+    while(theta>=pi/6):
+        getAngle(3,-sc/2+sc*cos(2*theta),-H-sqrt(3)*sc/2+sc*sin(2*theta),Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+    theta=pi/3
+    while(theta>=pi/6):
+        getAngle(1,-sc/2+sc*cos(2*theta),-H-sqrt(3)*sc/2+sc*sin(2*theta),Lc)
+        theta=theta-pi/180
+        createJointsnFeet()
+        createLegs()
+        sleep(0.05)
+        clearAll()
+
+
+def creep(steps):
+    k=(steps-2)/2
+    start()
+    i=1
+    while(i<=k):
+        cycle()
+        cont()
+        i=i+1
+    cycle()
+    end()
+    
+##
+
+
+
+
+def rightcurve(angle):
+    theta=pi/8
+    k=angle/theta/2-1
+    lfs1=vec_sum((0,0,-r),lfs0)
+    rfs1=vec_sum((0,0,-r),rfs0)
+    lbs1=vec_sum((0,0,-r),lfs0)
+    rbs1=vec_sum((0,0,-r),rfs0)
+    lff1=vec_sum((0,0,-r),lff0)
+    rff1=vec_sum((0,0,-r),rff0)
+    lbf1=vec_sum((0,0,-r),lff0)
+    rbf1=vec_sum((0,0,-r),rff0)
+    lffp1=quat_rot((0,1,0),lff1,-theta)
+    rffp1=quat_rot((0,1,0),rff1,-theta)
+    lbfp1=quat_rot((0,1,0),lbf1,-theta)
+    rbfp1=quat_rot((0,1,0),rbf1,-theta)
+    lffn1=quat_rot((0,1,0),lff1,theta)
+    rffn1=quat_rot((0,1,0),rff1,theta) 
+    lbfn1=quat_rot((0,1,0),lbf1,theta)
+    rbfn1=quat_rot((0,1,0),rbf1,theta)
+    lfdp1=vec_sub(lffp1,lfs1)
+    rfdp1=vec_sub(rffp1,rfs1)
+    lbdp1=vec_sub(lbfp1,lbs1)
+    rbdp1=vec_sub(rbfp1,rbs1)
+    lfdn1=vec_sub(lffn1,lfs1)
+    rfdn1=vec_sub(rffn1,rfs1)
+    lbdn1=vec_sub(lbfn1,lbs1)
+    rbdn1=vec_sub(rbfn1,rbs1)
+    t=0
+    while(t<=60):
+        getAngle(0,lfdn1[0]*t/60,lfdn1[1],lfdn1[2]*t/60-Lc)
+        getAngle(3,rbdn1[0]*t/60,rbdn1[1],rbdn1[2]*t/60+Lc)
+        getAngle(2,lbdp1[0]*t/60,lbdp1[1]+10-abs(t/3-10),lbdp1[2]*t/60-Lc)
+        getAngle(1,rfdp1[0]*t/60,rfdp1[1]+10-abs(t/3-10),rfdp1[2]*t/60+Lc)
+        t=t+1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+    i=0
+    while(i<=k):
+        t=0
+        while t<=120:
+            getAngle(0,mapping(t,0,120,lfdn1[0],lfdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,lfdn1[2],lfdp1[2])-Lc)
+            getAngle(3,mapping(t,0,120,rbdn1[0],rbdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,rbdn1[2],rbdp1[2])+Lc)
+            getAngle(1,mapping(t,0,120,rfdp1[0],rfdn1[0]),-H,mapping(t,0,120,rfdp1[2],rfdn1[2])+Lc)
+            getAngle(2,mapping(t,0,120,lbdp1[0],lbdn1[0]),-H,mapping(t,0,120,lbdp1[2],lbdn1[2])-Lc)
+            t=t+1
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        t=0
+        while t<=120:
+            getAngle(0,mapping(t,0,120,lfdp1[0],lfdn1[0]),-H,mapping(t,0,120,lfdp1[2],lfdn1[2])-Lc)
+            getAngle(3,mapping(t,0,120,rbdp1[0],rbdn1[0]),-H,mapping(t,0,120,rbdp1[2],rbdn1[2])+Lc)
+            getAngle(1,mapping(t,0,120,rfdn1[0],rfdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,rfdn1[2],rfdp1[2])+Lc)
+            getAngle(2,mapping(t,0,120,lbdn1[0],lbdp1[0]),-H+20-abs(t/3-20),mapping(t,0,120,lbdn1[2],lbdp1[2])-Lc)
+            t=t+1
+            createJointsnFeet()
+            createLegs()
+            sleep(0.01)
+            clearAll()
+
+        i=i+1
+
+    
+    t=60
+    while(t>=0):
+        getAngle(0,lfdn1[0]*t/60,lfdn1[1]+10-abs(t/3-10),lfdn1[2]*t/60-Lc)
+        getAngle(3,rbdn1[0]*t/60,rbdn1[1]+10-abs(t/3-10),rbdn1[2]*t/60+Lc)
+        getAngle(2,lbdp1[0]*t/60,lbdp1[1],lbdp1[2]*t/60-Lc)
+        getAngle(1,rfdp1[0]*t/60,rfdp1[1],rfdp1[2]*t/60+Lc)
+        t=t-1
+        createJointsnFeet()
+        createLegs()
+        sleep(0.01)
+        clearAll()
+
+
+
+def mapping(val,fromLow,fromHigh,toLow,toHigh):
+    scale=(toHigh-toLow)/(fromHigh-fromLow)
+    return toLow+(val-fromLow)*scale
+
+#loop
+
+
+xaxis=arrow(pos=(0,0,0),axis=(100,0,0),shaftwidth=5,color=color.red)
+yaxis=arrow(pos=(0,0,0),axis=(0,100,0),shaftwidth=5,color=color.green)
+zaxis=arrow(pos=(0,0,0),axis=(0,0,100),shaftwidth=5,color=color.blue)
+
+
+time=0
+dt=0.1
+while(time<=1000):
+        sleep(1)
+        createMainbody()
+        creep(10)
+        leftcurve(pi/4)
+        #roll(pi/6)
+        #roll(-pi/6)
+        #pitch(pi/6)
+        #pitch(-pi/6)
+        #yaw(pi/6)
+        #yaw(-pi/6)
+        #trot(6)
+        #backtrot(6)
+        #translateright(6)
+        #translateleft(6)
+        #spin(pi/3)
+        #backspin(pi/3)
+        #time=time+dt
+
+
